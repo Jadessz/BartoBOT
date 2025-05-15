@@ -61,8 +61,20 @@ def run_bot():
         # Don't process messages from the bot itself
         if message.author == bot.user:
             return
+            
+        # Check if message is in a guild (not a DM)
+        if not message.guild:
+            # For DMs, just process commands without filtering
+            await bot.process_commands(message)
+            return
 
         # Skip word filter for administrators and moderators
+        # Check if message is in a guild (not a DM)
+        if not hasattr(message.author, 'guild_permissions'):
+            # For DMs, just process commands without filtering
+            await bot.process_commands(message)
+            return
+        
         if message.author.guild_permissions.administrator or message.author.guild_permissions.moderate_members:
             await bot.process_commands(message)
             return
