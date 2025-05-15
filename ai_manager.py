@@ -16,10 +16,15 @@ class AIManager:
         if self.api_key:
             self.client = cohere.Client(api_key=self.api_key)
 
-    async def get_ai_response(self, query: str) -> Optional[str]:
+    async def get_ai_response(self, query: str, database_manager) -> Optional[str]:
         """Get a response from Cohere's API."""
         if not self.client:
             return None
+            
+        # Check AI status before processing
+        ai_status = await database_manager.get_ai_status()
+        if ai_status == 'Off':
+            return "AI commands are currently disabled by the administrator."
 
         try:
             response = await asyncio.to_thread(

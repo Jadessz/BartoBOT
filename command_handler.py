@@ -289,7 +289,7 @@ class CommandHandler:
                 return
 
             # Get AI response
-            response = await self.ai_manager.get_ai_response(question)
+            response = await self.ai_manager.get_ai_response(question, self.database_manager)
             if not response:
                 error_embed = await self.message_formatter.format_error(
                     "Failed to get a response from the AI."
@@ -301,6 +301,45 @@ class CommandHandler:
             response_embed = await self.ai_manager.format_ai_response(question, response)
             await ctx.send(embed=response_embed)
             logger.info(f"AI command used by {ctx.author} with question: {question}")
+
+        @self.bot.command(
+            name="aistatus",
+            help="[Admin Only] Get or set the AI command status\n\nUsage:\n?aistatus - Check current status\n?aistatus <On/Off> - Set status\n\nExample:\n?aistatus Off"
+        )
+        @commands.has_permissions(administrator=True)
+        async def aistatus(ctx, status: str = None):
+            if status is None:
+                # Get current status
+                current_status = await self.database_manager.get_ai_status()
+                status_embed = await self.message_formatter.format_success(
+                    f"AI commands are currently {current_status}",
+                    title="AI Status 🤖"
+                )
+                await ctx.send(embed=status_embed)
+                return
+
+            # Set new status
+            status = status.capitalize()
+            if status not in ['On', 'Off']:
+                error_embed = await self.message_formatter.format_error(
+                    "Status must be either 'On' or 'Off'"
+                )
+                await ctx.send(embed=error_embed, delete_after=10)
+                return
+
+            success = await self.database_manager.set_ai_status(status)
+            if success:
+                status_embed = await self.message_formatter.format_success(
+                    f"AI commands have been turned {status}",
+                    title="AI Status Updated 🤖"
+                )
+                await ctx.send(embed=status_embed)
+                logger.info(f"AI status set to {status} by {ctx.author}")
+            else:
+                error_embed = await self.message_formatter.format_error(
+                    "Failed to update AI status"
+                )
+                await ctx.send(embed=error_embed, delete_after=10)
 
         @self.bot.command(
             name="bjguide",

@@ -57,3 +57,28 @@ class DatabaseManager:
         except Exception as e:
             logger.error(f"Error removing banned word: {e}")
             return False
+            
+    async def get_ai_status(self) -> str:
+        """Get the AI command status from the database."""
+        try:
+            response = self.supabase.table('ai-access').select('aistatus').single().execute()
+            if response.data:
+                return response.data['aistatus']
+            return 'On'  # Default to On if no status is set
+        except Exception as e:
+            logger.error(f"Error getting AI status: {e}")
+            return 'On'  # Default to On in case of error
+    
+    async def set_ai_status(self, status: str) -> bool:
+        """Set the AI command status in the database."""
+        try:
+            status = status.capitalize()  # Ensure proper formatting (On/Off)
+            if status not in ['On', 'Off']:
+                return False
+                
+            # Update or insert the status
+            response = self.supabase.table('ai-access').upsert({'aistatus': status}).execute()
+            return True
+        except Exception as e:
+            logger.error(f"Error setting AI status: {e}")
+            return False
