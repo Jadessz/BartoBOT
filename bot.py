@@ -70,7 +70,7 @@ def run_bot():
         # Check for banned words from database
         content_lower = message.content.lower()
         # Get banned words from database
-~        banned_words = await database_manager.get_banned_words()
+        banned_words = await database_manager.get_banned_words()
         # Split message into words and check each word against banned words
         message_words = content_lower.split()
         found_banned_words = [word for word in banned_words if word in message_words]
