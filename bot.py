@@ -40,7 +40,7 @@ def run_bot(web_server_mode=False):
     bot = commands.Bot(command_prefix=config['COMMAND_PREFIX'], intents=intents)
     
     # Initialize command handler
-    command_handler = CommandHandler(bot)
+    command_handler = CommandHandler(bot, database_manager)
     command_handler.setup_commands()
 
     # Register event handlers

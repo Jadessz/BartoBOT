@@ -15,8 +15,9 @@ from ai_manager import AIManager
 logger = logging.getLogger('discord_bot')
 
 class CommandHandler:
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, database_manager):
         self.bot = bot
+        self.database_manager = database_manager
         self.commands: Dict[str, dict] = {}
         self.message_formatter = MessageFormatter()
         self.mod_tracker = ModerationTracker()
