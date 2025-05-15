@@ -36,14 +36,23 @@ async def setup_web_server():
     
     logger.info(f"Web server started on port {port}")
     
-    # Keep the server running
-    while True:
-        await asyncio.sleep(3600)  # Sleep for an hour
+    # Keep the server running without blocking request processing
+    try:
+        while True:
+            await asyncio.sleep(60)  # Check every minute instead of every hour
+    except asyncio.CancelledError:
+        logger.info("Web server is shutting down")
+        await runner.cleanup()
+        raise
 
 def run_bot_thread():
     """Run the Discord bot in a separate thread."""
-    # Call run_bot with default parameters (web_server_mode=False)
-    run_bot()
+    try:
+        # Call run_bot with default parameters (web_server_mode=False)
+        run_bot()
+    except Exception as e:
+        logger.error(f"Error starting bot: {e}")
+        logger.info("Web server will continue running even if bot fails to start")
 
 def main():
     """Main function to run both the bot and web server."""
