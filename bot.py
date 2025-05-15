@@ -19,8 +19,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger('discord_bot')
 
-def run_bot():
-    """Initialize and run the Discord bot."""
+def run_bot(web_server_mode=False):
+    """Initialize and run the Discord bot.
+    
+    Args:
+        web_server_mode (bool): If True, the function will return the bot instance instead of running it.
+    """
     # Load configuration
     config = load_config()
     
@@ -133,6 +137,10 @@ def run_bot():
             error_msg = await ctx.send(embed=error_embed)
             await error_msg.delete(delay=10)  # Delete after 10 seconds
     
+    # If in web server mode, return the bot instance instead of running it
+    if web_server_mode:
+        return bot, config
+        
     # Run the bot
     token = config['DISCORD_TOKEN']
     if not token:
