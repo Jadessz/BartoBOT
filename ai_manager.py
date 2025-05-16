@@ -24,7 +24,7 @@ class AIManager:
         # Check AI status before processing
         ai_status = await database_manager.get_ai_status()
         if ai_status == 'Off':
-            return "AI commands are currently disabled by the administrator."
+            return "AI commands are currently disabled."
 
         try:
             response = await asyncio.to_thread(

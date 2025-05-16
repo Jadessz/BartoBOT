@@ -300,7 +300,7 @@ class CommandHandler:
 
             # Check if response indicates AI is disabled
             if response == "AI commands are currently disabled by the administrator.":
-                await ctx.send(response)
+                await ctx.send("AI commands are currently disabled.")
                 return
 
             # Format and send response
