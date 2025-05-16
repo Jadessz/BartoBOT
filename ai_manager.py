@@ -16,15 +16,15 @@ class AIManager:
         if self.api_key:
             self.client = cohere.Client(api_key=self.api_key)
 
-    async def get_ai_response(self, query: str, database_manager) -> Optional[str]:
-        """Get a response from Cohere's API."""
+    async def get_ai_response(self, query: str, database_manager) -> tuple[Optional[str], bool]:
+        """Get a response from Cohere's API. Returns (response, should_format)"""
         if not self.client:
-            return None
+            return None, True
             
         # Check AI status before processing
         ai_status = await database_manager.get_ai_status()
         if ai_status == 'Off':
-            return "AI commands are currently disabled."
+            return "AI commands are currently disabled.", False
 
         try:
             response = await asyncio.to_thread(
@@ -34,9 +34,9 @@ class AIManager:
                 max_tokens=1000,
                 temperature=0.7
             )
-            return response.generations[0].text.strip()
+            return response.generations[0].text.strip(), True
         except Exception as e:
-            return f"Error: {str(e)}"
+            return f"Error: {str(e)}", True
 
     async def format_ai_response(self, query: str, response: str) -> discord.Embed:
         """Format the AI response into a Discord embed."""
