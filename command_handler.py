@@ -290,7 +290,7 @@ class CommandHandler:
                 return
 
             # Get AI response
-            response = await self.ai_manager.get_ai_response(question, self.database_manager)
+            response, should_format = await self.ai_manager.get_ai_response(question, self.database_manager)
             if not response:
                 error_embed = await self.message_formatter.format_error(
                     "Failed to get a response from the AI."
@@ -298,14 +298,13 @@ class CommandHandler:
                 await ctx.send(embed=error_embed, delete_after=10)
                 return
 
-            # Check if response indicates AI is disabled
-            if response == "AI commands are currently disabled by the administrator.":
-                await ctx.send("AI commands are currently disabled.")
-                return
-
-            # Format and send response
-            response_embed = await self.ai_manager.format_ai_response(question, response)
-            await ctx.send(embed=response_embed)
+            # Send response based on formatting flag
+            if should_format:
+                response_embed = await self.ai_manager.format_ai_response(question, response)
+                await ctx.send(embed=response_embed)
+            else:
+                await ctx.send(response)
+            
             logger.info(f"AI command used by {ctx.author} with question: {question}")
 
         @self.bot.command(
