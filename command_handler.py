@@ -298,6 +298,11 @@ class CommandHandler:
                 await ctx.send(embed=error_embed, delete_after=10)
                 return
 
+            # Check if response indicates AI is disabled
+            if response == "AI commands are currently disabled by the administrator.":
+                await ctx.send(response)
+                return
+
             # Format and send response
             response_embed = await self.ai_manager.format_ai_response(question, response)
             await ctx.send(embed=response_embed)
